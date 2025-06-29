@@ -18,7 +18,7 @@ const Page = () => {
       />
       <Header activeItem={activeItem} setActiveItem={setActiveItem} />
       <div className="min-h-screen mt-24">
-        <About />
+        {/* <About /> */}
       </div>
       <Footer />
     </div>
