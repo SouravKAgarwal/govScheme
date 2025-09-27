@@ -2,7 +2,6 @@ import ErrorHandler from "../config/errorHandler.js";
 import { catchAsyncError } from "../middlewares/catchAsyncErrors.js";
 import cloudinary from "cloudinary";
 import Layout from "../models/Layout.js";
-import { redis } from "../config/redis.js";
 import Scheme from "../models/Scheme.js";
 
 export const createLayout = catchAsyncError(async (req, res, next) => {
@@ -260,7 +259,6 @@ export const editLayout = catchAsyncError(async (req, res, next) => {
         },
       };
       await Layout.findByIdAndUpdate(bannerData._id, banner);
-      await redis.set(type, JSON.stringify(banner));
     }
 
     if (type === "FAQ") {
@@ -380,8 +378,6 @@ export const editLayout = catchAsyncError(async (req, res, next) => {
           };
         })
       );
-
-      console.log(categoryItems);
 
       await Layout.findByIdAndUpdate(categoryData._id, {
         categories: categoryItems,

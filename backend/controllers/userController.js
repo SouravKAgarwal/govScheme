@@ -9,7 +9,6 @@ import {
   refreshTokenOptions,
   sendToken,
 } from "../utils/jwt.js";
-import { redis } from "../config/redis.js";
 import { allUsers, getUserById, updateRole } from "../services/userServices.js";
 import cloudinary from "cloudinary";
 
@@ -111,8 +110,6 @@ export const logoutUser = catchAsyncError(async (req, res, next) => {
     res.cookie("access_token", "", { maxAge: 1 });
     res.cookie("refresh_token", "", { maxAge: 1 });
 
-    redis.del(req.user?._id);
-
     res.status(200).json({
       success: true,
       message: "Logged out successfully",
@@ -132,13 +129,7 @@ export const updateAccessToken = catchAsyncError(async (req, res, next) => {
       return next(new ErrorHandler("Could not refresh token", 400));
     }
 
-    const session = await redis.get(decoded.id);
-
-    if (!session) {
-      return next(new ErrorHandler("Please login again!", 400));
-    }
-
-    const user = JSON.parse(session);
+    const user = JSON.parse(decoded.id);
 
     const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN, {
       expiresIn: "5m",
@@ -151,7 +142,6 @@ export const updateAccessToken = catchAsyncError(async (req, res, next) => {
     res.cookie("access_token", accessToken, accessTokenOptions);
     res.cookie("refresh_token", refreshToken, refreshTokenOptions);
 
-    await redis.set(user._id, JSON.stringify(user), "EX", 604800);
     req.user = user;
     return next();
   } catch (error) {
@@ -203,8 +193,6 @@ export const updateUserInfo = catchAsyncError(async (req, res, next) => {
 
     await user.save();
 
-    await redis.set(userId, JSON.stringify(user));
-
     res.status(201).json({
       success: true,
       user,
@@ -231,8 +219,6 @@ export const updateUserPassword = catchAsyncError(async (req, res, next) => {
 
     user.password = newPassword;
     await user.save();
-
-    await redis.set(req.user._id, JSON.stringify(user));
 
     res.status(201).json({
       success: true,
@@ -275,7 +261,6 @@ export const updateUserAvatar = catchAsyncError(async (req, res, next) => {
     }
 
     await user.save();
-    await redis.set(userId, JSON.stringify(user));
 
     res.status(201).json({
       success: true,
@@ -321,8 +306,6 @@ export const deleteUser = catchAsyncError(async (req, res, next) => {
     if (!user) return next(new ErrorHandler("User not found", 400));
 
     await user.deleteOne({ id });
-    await redis.del(id);
-
     res.status(200).json({
       success: true,
       message: "User deleted successfully",

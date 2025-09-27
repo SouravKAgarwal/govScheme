@@ -42,9 +42,9 @@ const DashboardWidgets = ({ open, value }) => {
       return;
     } else {
       if (data) {
-        const userLastTwoMonths = data.users.last12Month.slice(-2);
+        const userLastTwoMonths = data.users?.last12Month.slice(-2);
 
-        if (userLastTwoMonths.length === 2) {
+        if (userLastTwoMonths?.length === 2) {
           const usersCurrentMonth = userLastTwoMonths[1].count;
           const usersPrevMonth = userLastTwoMonths[0].count;
 

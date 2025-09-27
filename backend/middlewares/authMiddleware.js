@@ -1,8 +1,8 @@
 import { catchAsyncError } from "./catchAsyncErrors.js";
 import jwt from "jsonwebtoken";
 import ErrorHandler from "../config/errorHandler.js";
-import { redis } from "../config/redis.js";
 import { updateAccessToken } from "../controllers/userController.js";
+import { getUserById } from "../services/userServices.js";
 
 export const protect = catchAsyncError(async (req, res, next) => {
   const access_token = req.cookies.access_token;
@@ -33,7 +33,7 @@ export const protect = catchAsyncError(async (req, res, next) => {
         return next(error);
       }
     } else {
-      const user = await redis.get(decoded.id);
+      const user = await getUserById(decoded.id, res);
 
       if (!user) {
         return next(new ErrorHandler("User not found", 404));

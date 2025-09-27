@@ -60,6 +60,8 @@ const Layout = ({ children }) => {
   }
 
   return (
-    <div className={`${poppins.variable} ${josefin.variable}`}>{children}</div>
+    <div className={`${poppins.variable} ${josefin.variable}`}>
+      {children}
+    </div>
   );
 };

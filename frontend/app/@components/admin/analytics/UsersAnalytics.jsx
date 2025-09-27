@@ -15,7 +15,7 @@ const CourseAnalytics = ({ isDashboard }) => {
   const analyticsData = [];
 
   data &&
-    data.users.last12Month.forEach((item) => {
+    data.users?.last12Month.forEach((item) => {
       analyticsData.push({ name: item.month, count: item.count });
     });
 

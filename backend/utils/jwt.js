@@ -1,5 +1,3 @@
-import { redis } from "../config/redis.js";
-
 const accessTokenExpire = parseInt(process.env.ACCESS_TOKEN_EXPIRE || "5", 10);
 const refreshTokenExpire = parseInt(
   process.env.REFRESH_TOKEN_EXPIRE || "3",
@@ -25,8 +23,6 @@ export const refreshTokenOptions = {
 export const sendToken = (user, statusCode, res) => {
   const accessToken = user.signAccessToken();
   const refreshToken = user.signRefreshToken();
-
-  redis.set(user._id, JSON.stringify(user));
 
   res.cookie("access_token", accessToken, accessTokenOptions);
   res.cookie("refresh_token", refreshToken, refreshTokenOptions);
